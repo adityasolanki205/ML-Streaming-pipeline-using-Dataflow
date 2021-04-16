@@ -219,10 +219,10 @@ Below are the steps to setup the enviroment and run the codes:
                     data =  ( encoded_data
                             | 'Decode' >> beam.Map(lambda x: x.decode('utf-8') 
                             ) 
-              parsed_data = (data 
+              parsed_data = ( data 
                             | 'Parsing Data' >> beam.ParDo(Split())
                             )
-           Converted_data = (parsed_data
+           Converted_data = ( parsed_data
                             | 'Convert Datatypes' >> beam.Map(Convert_Datatype)
                             | 'Writing output' >> beam.io.WriteToText(known_args.output))
 
@@ -278,16 +278,16 @@ Below are the steps to setup the enviroment and run the codes:
                              | 'Read data' >> beam.io.ReadFromPubSub(topic=TOPIC).with_output_types(bytes))
             data           = ( encoded_data
                              | 'Decode' >> beam.Map(lambda x: x.decode('utf-8')) 
-            Parsed_data    = (data 
+            Parsed_data    = ( data 
                              | 'Parsing Data' >> beam.ParDo(Split()))
-            Converted_data = (Parsed_data
+            Converted_data = ( Parsed_data
                              | 'Convert Datatypes' >> beam.Map(Convert_Datatype))
-            Prediction     = (Converted_data 
+            Prediction     = ( Converted_data 
                              | 'Predition' >> beam.ParDo(Predict_Data(project=PROJECT_ID, 
                                                          bucket_name='gs://streaming-pipeline-testing', 
                                                          model_path='Selected_Model.pkl',
                                                          destination_name='Selected_model.pkl')))
-            Output         = (Prediction
+            Output         = ( Prediction
                              | 'Saving the output' >> beam.io.WriteToText(known_args.output))
     if __name__ == '__main__':
         run()
@@ -340,22 +340,22 @@ Below are the steps to setup the enviroment and run the codes:
             data           = ( encoded_data
                              | 'Decode' >> beam.Map(lambda x: x.decode('utf-8') 
                              ) 
-            Parsed_data    = (data 
+            Parsed_data    = ( data 
                              | 'Parsing Data' >> beam.ParDo(Split()))
-            Converted_data = (Parsed_data
+            Converted_data = ( Parsed_data
                              | 'Convert Datatypes' >> beam.Map(Convert_Datatype))
 
-            Prediction     = (Converted_data 
+            Prediction     = ( Converted_data 
                              | 'Predition' >> beam.ParDo(Predict_Data(project=PROJECT_ID, 
                                                          bucket_name='gs://streaming-pipeline-testing', 
                                                          model_path='Selected_Model.pkl',
                                                          destination_name='Selected_model.pkl')))
-            output =( Prediction      
-                     | 'Writing to bigquery' >> beam.io.WriteToBigQuery(
-                       '{0}:GermanCredit.GermanCreditTable'.format(PROJECT_ID),
-                       schema=SCHEMA,
-                       write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND)
-                    )
+            output         = ( Prediction      
+                             | 'Writing to bigquery' >> beam.io.WriteToBigQuery(
+                               '{0}:GermanCredit.GermanCreditTable'.format(PROJECT_ID),
+                               schema=SCHEMA,
+                               write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND)
+                             )
 
     if __name__ == '__main__':
         run()        
@@ -367,9 +367,9 @@ To test the code we need to do the following:
     1. Copy the repository in Cloud SDK using below command:
     git clone https://github.com/adityasolanki205/ML-Streaming-pipeline-using-Dataflow.git
     
-    2. Create a Storage Bucket in us-east1 with 2 separate folders temp and stage by the name streaming-pipeline-testing
+    2. Create a Storage Bucket by the name 'streaming-pipeline-testing' in us-east1 with 2 separate subfolders temp and stage 
     
-    3. Copy the data file in the cloud Bucket using the below command
+    3. Copy the machine learning model file in the cloud Bucket using the below command
     cd ML-Streaming-pipeline-using-Dataflow
     gsutil cp Selected_model.pkl gs://streaming-pipeline-testing/
     
