@@ -3,14 +3,13 @@
 
 import random
 
-LINE ="""{Existing_account} {Duration_month} {Credit_history} {Purpose} {Credit_amount} {Saving} {Employment_duration} {Installment_rate} {Personal_status} {Debtors} {Residential_Duration} {Property} {Age} {Installment_plans} {Housing} {Number_of_credits} {Job} {Liable_People} {Telephone} {Foreign_worker} {Classification}"""
+LINE ="""{Existing_account} {Duration_month} {Credit_history} {Purpose} {Credit_amount} {Saving} {Employment_duration} {Installment_rate} {Personal_status} {Debtors} {Residential_Duration} {Property} {Age} {Installment_plans} {Housing} {Number_of_credits} {Job} {Liable_People} {Telephone} {Foreign_worker}"""
 def generate_log():
     existing_account = ['B11','A12','C14',
                         'D11','E11','A14',
                         'G12','F12','A11',
-                        'NULL','H11','I11',
-                        'J14','K14','L11',
-                        'A13'
+                        'H11','I11','A13',
+                        'J14','K14','L11'
                        ]
     Existing_account = random.choice(existing_account)
     
@@ -28,7 +27,7 @@ def generate_log():
                     ]
     Credit_history = random.choice(credit_history)
     
-    purpose = [ 'A43','NULL','A42',
+    purpose = [ 'A43','A42',
                 'A40','A46','A41',
                 'A49','A44','A45',
                 'A410','A48'
@@ -64,8 +63,7 @@ def generate_log():
     personal_status = ['A93',
     'A92',
     'A91',
-    'A94',
-    'NULL'
+    'A94'
     ]
     Personal_status = random.choice(personal_status)
     
@@ -85,8 +83,7 @@ def generate_log():
     Proprty = ['A121',
     'A122',
     'A124',
-    'A123',
-    'NULL'
+    'A123'
     ]
     Property = random.choice(Proprty)
     
@@ -98,7 +95,6 @@ def generate_log():
     installment_plans = ['A143',
                         'A141',
                         'A142',
-                        'NULL'
     ]
     Installment_plans = random.choice(installment_plans)
     
@@ -132,10 +128,6 @@ def generate_log():
     'A202']
     Foreign_worker = random.choice(foreign_worker)
     
-    classification = ['NULL',
-    '1',
-    '2']
-    Classification = random.choice(classification)
     log_line = LINE.format(
         Existing_account=Existing_account,
         Duration_month=Duration_month,
@@ -156,8 +148,8 @@ def generate_log():
         Job= Job,
         Liable_People=Liable_People,
         Telephone=Telephone,
-        Foreign_worker=Foreign_worker,
-        Classification=Classification
+        Foreign_worker=Foreign_worker
     )
 
     return log_line
+
