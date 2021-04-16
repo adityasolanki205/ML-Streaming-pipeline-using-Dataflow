@@ -92,7 +92,7 @@ Below are the steps to setup the enviroment and run the codes:
 
 ```
 
-3. **Reading Data from Pub Sub**: Now we will start reading data from Pub sub to start the pipeline . The data is read using **beam.io.ReadFromPubSub()**. Here we will just read the input message by providing the TOPIC and the output is decoded which was encoded while generating the data. 
+4. **Reading Data from Pub Sub**: Now we will start reading data from Pub sub to start the pipeline . The data is read using **beam.io.ReadFromPubSub()**. Here we will just read the input message by providing the TOPIC and the output is decoded which was encoded while generating the data. 
 
 ```python
     def run(argv=None, save_main_session=True):
@@ -120,7 +120,7 @@ Below are the steps to setup the enviroment and run the codes:
         run()
 ``` 
 
-4. **Parsing the data**: After reading the input from Pub-Sub we will split the data using split(). Data is segregated into different columns to be used in further steps. We will **ParDo()** to create a split function. The output of this step is present in SplitPardo text file.
+5. **Parsing the data**: After reading the input from Pub-Sub we will split the data using split(). Data is segregated into different columns to be used in further steps. We will **ParDo()** to create a split function. The output of this step is present in SplitPardo text file.
 
 ```python
     class Split(beam.DoFn):
@@ -183,7 +183,7 @@ Below are the steps to setup the enviroment and run the codes:
         run()
 ``` 
 
-5. **Filtering the data**: Now we will clean the data by removing all the rows having Null values from the dataset. We will use **Filter()** to return only valid rows with no Null values. Output of this step is saved in the file named Filtered_data.
+6. **Filtering the data**: Now we will clean the data by removing all the rows having Null values from the dataset. We will use **Filter()** to return only valid rows with no Null values. Output of this step is saved in the file named Filtered_data.
 
 ```python
     ...
@@ -213,7 +213,7 @@ Below are the steps to setup the enviroment and run the codes:
         run()
 ```
 
-6. **Performing Type Convertion**: After Filtering we will convert the datatype of numeric columns from String to Int or Float datatype. Here we will use **Map()** to apply the Convert_Datatype(). The output of this step is saved in Convert_datatype text file.
+7. **Performing Type Convertion**: After Filtering we will convert the datatype of numeric columns from String to Int or Float datatype. Here we will use **Map()** to apply the Convert_Datatype(). The output of this step is saved in Convert_datatype text file.
 
 ```python
     ... 
@@ -245,7 +245,7 @@ Below are the steps to setup the enviroment and run the codes:
         run()
 ```
 
-7. **Data wrangling**: Now we will do some data wrangling to make some more sense of the data in some columns. For Existing_account contain 3 characters. First character is an Aplhabet which signifies Month of the year and next 2 characters are numeric which signify days. So here as well we will use Map() to wrangle data. The output of this dataset is present by the name DataWrangle.
+8. **Data wrangling**: Now we will do some data wrangling to make some more sense of the data in some columns. For Existing_account contain 3 characters. First character is an Aplhabet which signifies Month of the year and next 2 characters are numeric which signify days. So here as well we will use Map() to wrangle data. The output of this dataset is present by the name DataWrangle.
 
 ```python
     ... 
@@ -298,7 +298,7 @@ Below are the steps to setup the enviroment and run the codes:
         run()
 ```
 
-8. **Delete Unwanted Columns**: After converting certain columns to sensable data we will remove redundant columns from the dataset. Output of this is present with the file name Delete_Unwanted_Columns text file.
+9. **Delete Unwanted Columns**: After converting certain columns to sensable data we will remove redundant columns from the dataset. Output of this is present with the file name Delete_Unwanted_Columns text file.
 
 ```python
     ...
@@ -329,7 +329,7 @@ Below are the steps to setup the enviroment and run the codes:
         run()    
 ```
 
-9. **Inserting Data in Bigquery**: Final step in the Pipeline it to insert the data in Bigquery. To do this we will use **beam.io.WriteToBigQuery()** which requires Project id and a Schema of the target table to save the data. 
+10. **Inserting Data in Bigquery**: Final step in the Pipeline it to insert the data in Bigquery. To do this we will use **beam.io.WriteToBigQuery()** which requires Project id and a Schema of the target table to save the data. 
 
 ```python
     import apache_beam as beam
