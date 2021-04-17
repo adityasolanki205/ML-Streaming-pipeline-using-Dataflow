@@ -1,14 +1,12 @@
 # Machine Learning Streaming Pipeline using DataFlow (under construction)
-This is one of the **Introduction to Apache Beam using Python** Repository. Here we will try to learn basics of Apache Beam to create **Streaming** pipelines. We will learn step by step how to create a streaming pipeline using [German Credit Risk](https://www.kaggle.com/uciml/german-credit). The complete process is divided into 8 parts:
+This is one of the **Introduction to Apache Beam using Python** Repository. Here we will try to learn basics of Apache Beam to create Supervised learning model depoyed in **Streaming** pipeline . We will learn step by step how to create a streaming pipeline using [German Credit Risk](https://www.kaggle.com/uciml/german-credit). The complete process is divided into 8 parts:
 
 1. **Generating Streaming Data**
 2. **Reading Data from Pub Sub**
 3. **Parsing the data**
-4. **Filtering the data**
-5. **Performing Type Convertion**
-6. **Data wrangling**
-7. **Deleting Unwanted Columns**
-8. **Inserting Data in Bigquery**
+4. **Performing Type Convertion**
+5. **Predicting the customer segment**
+6. **Inserting Data in Bigquery**
 
 
 ## Motivation
@@ -57,7 +55,7 @@ Below are the steps to setup the enviroment and run the codes:
                 {Purpose} 
                 {Credit_amount} 
                 .....
-                {Classification}"""
+                {Foreign_worker}"""
 
     def generate_log():
         existing_account = ['B11','A12','C14',
@@ -74,7 +72,7 @@ Below are the steps to setup the enviroment and run the codes:
             duration_month.append(i)
         Duration_month = random.choice(duration_month)
         ....
-        foreign_worker = ['A201',
+        Foreign_worker = ['A201',
                         'A202']
         Foreign_worker = random.choice(foreign_worker)
         log_line = LINE.format(
@@ -90,22 +88,18 @@ Below are the steps to setup the enviroment and run the codes:
 
 ```
 
-4. **Reading Data from Pub Sub**: Now we will start reading data from Pub sub to start the pipeline . The data is read using **beam.io.ReadFromPubSub()**. Here we will just read the input message by providing the TOPIC and the output is decoded which was encoded while generating the data. 
+4. **Reading Data from Pub Sub**: Now we will start reading data from Pub sub to start the pipeline. The data is read using **beam.io.ReadFromPubSub()**. Here we will just read the input message by providing the TOPIC and the output is decoded which was encoded while generating the data. 
 
 ```python
     def run(argv=None, save_main_session=True):
         parser = argparse.ArgumentParser()
         parser.add_argument(
-          '--input',
-          dest='input',
-          help='Input file to process')
-        parser.add_argument(
-          '--output',
-          dest='output',
-          default='../output/result.txt',
-          help='Output file to write results to.')
+        '--project',
+        dest='project',
+        help='Project used for this Pipeline')
         known_args, pipeline_args = parser.parse_known_args(argv)
         options = PipelineOptions(pipeline_args)
+        PROJECT_ID = known_args.project
         TOPIC ="projects/trusty-field-283517/topics/german_credit_data"
         with beam.Pipeline(options=PipelineOptions()) as p:
             encoded_data = ( p 
@@ -118,7 +112,7 @@ Below are the steps to setup the enviroment and run the codes:
         run()
 ``` 
 
-5. **Parsing the data**: After reading the input from Pub-Sub we will split the data using split(). Data is segregated into different columns to be used in further steps. We will **ParDo()** to create a split function. The output of this step is present in SplitPardo text file.
+5. **Parsing the data**: After reading the input from Pub-Sub we will split the data using split(). Data is segregated into different columns to be used in further steps. We will **ParDo()** to create a split function.
 
 ```python
     class Split(beam.DoFn):
@@ -182,7 +176,7 @@ Below are the steps to setup the enviroment and run the codes:
         run()
 ``` 
 
-6. **Performing Type Convertion**: After Filtering we will convert the datatype of numeric columns from String to Int or Float datatype. Here we will use **Map()** to apply the Convert_Datatype(). The output of this step is saved in Converted_datatype text file.
+6. **Performing Type Convertion**: After Filtering we will convert the datatype of numeric columns from String to Int or Float datatype. Here we will use **Map()** to apply the Convert_Datatype(). 
 
 ```python
     ... 
@@ -367,24 +361,26 @@ To test the code we need to do the following:
     1. Copy the repository in Cloud SDK using below command:
     git clone https://github.com/adityasolanki205/ML-Streaming-pipeline-using-Dataflow.git
     
-    2. Create a Storage Bucket by the name 'streaming-pipeline-testing' in us-east1 with 2 separate subfolders temp and stage 
+    2. Create a Storage Bucket by the name 'streaming-pipeline-testing' in us-east1 
     
-    3. Copy the machine learning model file in the cloud Bucket using the below command
+    3. Create 2 separate subfolders temp and stage in the bucket
+    
+    4. Copy the machine learning model file in the cloud Bucket using the below command
     cd ML-Streaming-pipeline-using-Dataflow
     gsutil cp Selected_model.pkl gs://streaming-pipeline-testing/
     
-    3. Create a Dataset in us-east1 by the name GermanCredit
+    5. Create a Dataset in us-east1 by the name GermanCredit
     
-    4. Create a table in GermanCredit dataset by the name GermanCreditTable
+    6. Create a table in GermanCredit dataset by the name GermanCreditTable
     
-    5. Create Pub Sub Topic by the name german_credit_data
+    7. Create Pub Sub Topic by the name german_credit_data
     
-    6. Install Apache Beam on the SDK using below command
+    8. Install Apache Beam on the SDK using below command
     sudo pip3 install apache_beam[gcp]
     sudo pip3 install joblib
     sudo pip3 install sklearn
     
-    7. Run the command and see the magic happen:
+    9. Run the command and see the magic happen:
      python3 ml-streaming-pipeline.py \
      --runner DataFlowRunner \
      --project trusty-field-283517 \
@@ -396,7 +392,7 @@ To test the code we need to do the following:
      --setup_file ./setup.py
      --streaming 
      
-    8. Open one more tab in cloud SDK and run below command 
+    10. Open one more tab in cloud SDK and run below command 
     python3 publish_to_pubsub.py
 
 ## Credits
