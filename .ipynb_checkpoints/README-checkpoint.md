@@ -389,10 +389,11 @@ To test the code we need to do the following:
      --region us-east1 \
      --job_name ml-stream-analysis \
      --save_main_session True \
-     --setup_file ./setup.py
+     --setup_file ./setup.py \
      --streaming 
      
     10. Open one more tab in cloud SDK and run below command 
+    cd ML-Streaming-pipeline-using-Dataflow
     python3 publish_to_pubsub.py
 
 ## Credits
