@@ -361,24 +361,26 @@ To test the code we need to do the following:
     1. Copy the repository in Cloud SDK using below command:
     git clone https://github.com/adityasolanki205/ML-Streaming-pipeline-using-Dataflow.git
     
-    2. Create a Storage Bucket by the name 'streaming-pipeline-testing' in us-east1 with 2 separate subfolders temp and stage 
+    2. Create a Storage Bucket by the name 'streaming-pipeline-testing' in us-east1 
     
-    3. Copy the machine learning model file in the cloud Bucket using the below command
+    3. Create 2 separate subfolders temp and stage in the bucket
+    
+    4. Copy the machine learning model file in the cloud Bucket using the below command
     cd ML-Streaming-pipeline-using-Dataflow
     gsutil cp Selected_model.pkl gs://streaming-pipeline-testing/
     
-    3. Create a Dataset in us-east1 by the name GermanCredit
+    5. Create a Dataset in us-east1 by the name GermanCredit
     
-    4. Create a table in GermanCredit dataset by the name GermanCreditTable
+    6. Create a table in GermanCredit dataset by the name GermanCreditTable
     
-    5. Create Pub Sub Topic by the name german_credit_data
+    7. Create Pub Sub Topic by the name german_credit_data
     
-    6. Install Apache Beam on the SDK using below command
+    8. Install Apache Beam on the SDK using below command
     sudo pip3 install apache_beam[gcp]
     sudo pip3 install joblib
     sudo pip3 install sklearn
     
-    7. Run the command and see the magic happen:
+    9. Run the command and see the magic happen:
      python3 ml-streaming-pipeline.py \
      --runner DataFlowRunner \
      --project trusty-field-283517 \
@@ -390,7 +392,7 @@ To test the code we need to do the following:
      --setup_file ./setup.py
      --streaming 
      
-    8. Open one more tab in cloud SDK and run below command 
+    10. Open one more tab in cloud SDK and run below command 
     python3 publish_to_pubsub.py
 
 ## Credits
