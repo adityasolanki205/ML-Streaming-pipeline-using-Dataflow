@@ -367,7 +367,7 @@ To test the code we need to do the following:
     
     4. Copy the machine learning model file in the cloud Bucket using the below command
     cd ML-Streaming-pipeline-using-Dataflow
-    gsutil cp Selected_model.pkl gs://streaming-pipeline-testing/
+    gsutil cp Selected_Model.pkl gs://streaming-pipeline-testing/
     
     5. Create a Dataset in us-east1 by the name GermanCredit
     
