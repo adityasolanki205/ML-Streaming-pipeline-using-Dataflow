@@ -7,6 +7,8 @@ from apache_beam.options.pipeline_options import PipelineOptions
 import argparse
 from google.cloud import pubsub_v1
 from google.cloud import storage
+import numpy as np
+import joblib
 
 SCHEMA='Existing_account:INTEGER,Duration_month:FLOAT,Credit_history:INTEGER,Purpose:INTEGER,Credit_amount:FLOAT,Saving:INTEGER,Employment_duration:INTEGER,Installment_rate:FLOAT,Personal_status:INTEGER,Debtors:INTEGER,Residential_Duration:FLOAT,Property:INTEGER,Age:FLOAT,Installment_plans:INTEGER,Housing:INTEGER,Number_of_credits:FLOAT,Job:INTEGER,Liable_People:FLOAT,Telephone:INTEGER,Foreign_worker:INTEGER,Prediction:INTEGER'
 
@@ -115,7 +117,7 @@ def run(argv=None, save_main_session=True):
                        | 'Convert Datatypes' >> beam.Map(Convert_Datatype))
         Prediction     = (Converted_data 
                        | 'Predition' >> beam.ParDo(Predict_Data(project=PROJECT_ID, 
-                                                              bucket_name='gs://streaming-pipeline-testing', 
+                                                              bucket_name='streaming-pipeline-testing', 
                                                               model_path='Selected_Model.pkl',
                                                               destination_name='Selected_Model.pkl')))
         output         = ( Prediction      
