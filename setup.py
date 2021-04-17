@@ -8,13 +8,14 @@ setup(
     name='ml-deployment',
     version='0.1',
     author='Aditya',
+    author_email = 'Aditya'
     install_requires=["numpy", 
                       "pandas", 
                       "google-cloud-storage", 
                       "scikit-learn", 
                       "joblib",
-                      'google-cloud-pubsub', 
-                      'googleapis-common-protos==1.5.3'
+                      "google-cloud-pubsub", 
+                      "googleapis-common-protos==1.5.10"
                      ],
     packages=find_packages(exclude=['data']),
     description='Dataflow sklearn Streaming',
