@@ -15,7 +15,7 @@ setup(
                       "scikit-learn", 
                       "joblib",
                       "google-cloud-pubsub", 
-                      "googleapis-common-protos==1.5.3"
+                      "googleapis-common-protos==1.5.10"
                      ],
     packages=find_packages(exclude=['data']),
     description='Dataflow sklearn Streaming',
