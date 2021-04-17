@@ -393,6 +393,7 @@ To test the code we need to do the following:
      --streaming 
      
     10. Open one more tab in cloud SDK and run below command 
+    cd ML-Streaming-pipeline-using-Dataflow
     python3 publish_to_pubsub.py
 
 ## Credits
