@@ -13,7 +13,7 @@ setup(
                       "pandas", 
                       "google-cloud-storage", 
                       "scikit-learn", 
-                      "joblib",
+                      "joblib==0.13.2",
                       "google-cloud-pubsub", 
                       "googleapis-common-protos==1.5.10"
                      ],
