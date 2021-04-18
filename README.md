@@ -384,6 +384,9 @@ To test the code we need to do the following:
      python3 ml-streaming-pipeline.py \
      --runner DataFlowRunner \
      --project trusty-field-283517 \
+     --bucket_name streaming-pipeline-testing \
+     --model_path rf_model.sav \
+     --destination_name rf_model.sav \
      --temp_location gs://streaming-pipeline-testing/temp \
      --staging_location gs://streaming-pipeline-testing/stage \
      --region us-east1 \
