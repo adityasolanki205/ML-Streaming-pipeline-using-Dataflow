@@ -8,13 +8,7 @@ import random
 
 LINE ="""{Existing_account} {Duration_month} {Credit_history} {Purpose} {Credit_amount} {Saving} {Employment_duration} {Installment_rate} {Personal_status} {Debtors} {Residential_Duration} {Property} {Age} {Installment_plans} {Housing} {Number_of_credits} {Job} {Liable_People} {Telephone} {Foreign_worker}"""
 def generate_log():
-    existing_account = ['B11','A12','C14',
-                        'D11','E11','A14',
-                        'G12','F12','A11',
-                        'H11','I11','A13',
-                        'J14','K14','L11',
-                        
-                       ]
+    existing_account = [0,1,2,3]
     Existing_account = random.choice(existing_account)
     
     duration_month = []
@@ -22,20 +16,10 @@ def generate_log():
         duration_month.append(i)
     Duration_month = random.choice(duration_month)
     
-    credit_history = [
-                    'A34',
-                    'A32',
-                    'A33',
-                    'A30',
-                    'A31'
-                    ]
+    credit_history = [0,1,2,3,4]
     Credit_history = random.choice(credit_history)
     
-    purpose = [ 'A43','A42','A48',
-                'A40','A46','A41',
-                'A49','A44','A45',
-                'A410'
-    ]
+    purpose = [ 0,1,2,3,4,5,6,7,8,9]
     Purpose = random.choice(purpose)
     
     credit_amount = []
@@ -43,52 +27,25 @@ def generate_log():
         credit_amount.append(i)
     Credit_amount = random.choice(credit_amount)
     
-    saving = [
-            'A65','A61',
-            'A63','A64',
-            'A62']
+    saving = [0,1,2,3,4]
     Saving = random.choice(saving)
     
-    employment_duration = [
-                        'A75',
-                        'A73',
-                        'A74',
-                        'A71',
-                        'A72']
+    employment_duration = [0,1,2,3,4]
     Employment_duration = random.choice(employment_duration)
     
-    installment_rate = ['4',
-                        '2',
-                        '3',
-                        '1'
-    ]
+    installment_rate = [1,2,3,4]
     Installment_rate = random.choice(installment_rate)
     
-    personal_status = ['A93',
-    'A92',
-    'A91',
-    'A94'
-    ]
+    personal_status = [0,1,2,3]
     Personal_status = random.choice(personal_status)
     
-    debtors = ['A101',
-    'A103',
-    'A102'
-    ]
+    debtors = [0,1,2]
     Debtors = random.choice(debtors)
     
-    residential_Duration = ['4',
-    '2',
-    '3',
-    '1'
-    ]
+    residential_Duration = [1,2,3,4]
     Residential_Duration = random.choice(residential_Duration)
     
-    Proprty = ['A121',
-    'A122',
-    'A124',
-    'A123'
-    ]
+    Proprty = [0,1,2,3,4,5,6,8,9]
     Property = random.choice(Proprty)
     
     age = []
@@ -96,16 +53,10 @@ def generate_log():
         age.append(i)
     Age = random.choice(age)
     
-    installment_plans = ['A143',
-                        'A141',
-                        'A142'
-    ]
+    installment_plans = [0,1,2]
     Installment_plans = random.choice(installment_plans)
     
-    housing = ['A152',
-    'A153',
-    'A151'
-    ]
+    housing = [0,1,2]
     Housing = random.choice(housing)
     
     number_of_credits = []
@@ -113,26 +64,18 @@ def generate_log():
         number_of_credits.append(i)
     Number_of_credits = random.choice(number_of_credits)
     
-    job = ['A173',
-    'A172',
-    'A174',
-    'A171']
+    job = [0,1,2,3]
     Job = random.choice(job)
     
-    liable_People = ['1',
-                    '2']
+    liable_People = [1,2]
     Liable_People = random.choice(liable_People)
     
-    telephone = ['A192',
-    'A191',
-    ]
+    telephone = [0,1]
     Telephone = random.choice(telephone)
     
-    foreign_worker = ['A201',
-    'A202']
+    foreign_worker = [0,1]
     Foreign_worker = random.choice(foreign_worker)
     
-    Classification = random.choice(classification)
     log_line = LINE.format(
         Existing_account=Existing_account,
         Duration_month=Duration_month,
@@ -157,3 +100,7 @@ def generate_log():
     )
 
     return log_line
+if __name__ == '__main__':
+    while True:
+        line = generate_log()
+        print(line)
