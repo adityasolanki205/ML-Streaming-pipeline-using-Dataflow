@@ -9,6 +9,7 @@ from google.cloud import pubsub_v1
 from google.cloud import storage
 import numpy as np
 import joblib
+import pickle
 
 SCHEMA='Existing_account:INTEGER,Duration_month:FLOAT,Credit_history:INTEGER,Purpose:INTEGER,Credit_amount:FLOAT,Saving:INTEGER,Employment_duration:INTEGER,Installment_rate:FLOAT,Personal_status:INTEGER,Debtors:INTEGER,Residential_Duration:FLOAT,Property:INTEGER,Age:FLOAT,Installment_plans:INTEGER,Housing:INTEGER,Number_of_credits:FLOAT,Job:INTEGER,Liable_People:FLOAT,Telephone:INTEGER,Foreign_worker:INTEGER,Prediction:INTEGER'
 
@@ -86,7 +87,7 @@ class Predict_Data(beam.DoFn):
                       source_blob_name=self._model_path,
                       project=self._project, 
                       destination_file_name=self._destination_name)
-        self._model = joblib.load(self._destination_name)
+        self._model = pickle.load(open(self._destination_name, 'rb'))
         
     def process(self, element):
         """Predicting using developed model"""
@@ -102,6 +103,12 @@ def run(argv=None, save_main_session=True):
       '--project',
       dest='project',
       help='Project used for this Pipeline')
+    parser.add_argument(
+        '--bucket_name', required=True, help='The name of the bucket')
+    parser.add_argument(
+        '--model_path', required=True, help='The path to the model that should be loaded')
+    parser.add_argument(
+        '--destination_name', required=True, help='The destination name of the files')
     known_args, pipeline_args = parser.parse_known_args(argv)
     options = PipelineOptions(pipeline_args)
     PROJECT_ID = known_args.project
@@ -116,10 +123,10 @@ def run(argv=None, save_main_session=True):
         Converted_data = (Parsed_data
                        | 'Convert Datatypes' >> beam.Map(Convert_Datatype))
         Prediction     = (Converted_data 
-                       | 'Predition' >> beam.ParDo(Predict_Data(project=PROJECT_ID, 
-                                                              bucket_name='streaming-pipeline-testing', 
-                                                              model_path='Selected_Model.pkl',
-                                                              destination_name='Selected_Model.pkl')))
+                       | 'Predition' >> beam.ParDo(Predict_Data(project=PROJECT_ID,
+                                                                bucket_name=known_args.bucket_name,
+                                                                model_path=known_args.model_path,
+                                                                destination_name=known_args.destination_name)))
         output         = ( Prediction      
                        | 'Writing to bigquery' >> beam.io.WriteToBigQuery(
                        '{0}:GermanCredit.GermanCreditTable'.format(PROJECT_ID),
