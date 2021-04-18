@@ -8,7 +8,7 @@ setup(
     name='ml-deployment',
     version='0.1',
     author='Aditya',
-    author_email = 'Aditya'
+    author_email = 'Aditya',
     install_requires=["numpy", 
                       "pandas", 
                       "google-cloud-storage", 
