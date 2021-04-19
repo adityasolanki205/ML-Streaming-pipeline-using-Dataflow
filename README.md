@@ -385,8 +385,8 @@ To test the code we need to do the following:
      --runner DataFlowRunner \
      --project trusty-field-283517 \
      --bucket_name streaming-pipeline-testing \
-     --model_path rf_model.sav \
-     --destination_name rf_model.sav \
+     --model_path Selected_Model.pkl \
+     --destination_name Selected_Model.pkl \
      --temp_location gs://streaming-pipeline-testing/temp \
      --staging_location gs://streaming-pipeline-testing/stage \
      --region us-east1 \
