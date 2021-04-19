@@ -87,7 +87,7 @@ class Predict_Data(beam.DoFn):
                       source_blob_name=self._model_path,
                       project=self._project, 
                       destination_file_name=self._destination_name)
-        self._model = pickle.load(open(self._destination_name, 'rb'))
+        self._model = joblib.load(self._destination_name)
         
     def process(self, element):
         """Predicting using developed model"""
