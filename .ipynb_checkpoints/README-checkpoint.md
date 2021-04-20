@@ -382,18 +382,20 @@ To test the code we need to do the following:
     
     9. Run the command and see the magic happen:
      python3 ml-streaming-pipeline.py \
-     --runner DataFlowRunner \
-     --project trusty-field-283517 \
-     --bucket_name streaming-pipeline-testing \
-     --model_path Selected_Model.pkl \
-     --destination_name Selected_Model.pkl \
-     --temp_location gs://streaming-pipeline-testing/temp \
-     --staging_location gs://streaming-pipeline-testing/stage \
-     --region us-east1 \
-     --job_name ml-stream-analysis \
-     --save_main_session True \
-     --setup_file ./setup.py \
-     --streaming 
+      --runner DataFlowRunner \
+      --project trusty-field-283517 \
+      --bucket_name streaming-pipeline-testing \
+      --model_path Selected_Model.pkl \
+      --destination_name Selected_Model.pkl \
+      --temp_location gs://streaming-pipeline-testing/temp \
+      --staging_location gs://streaming-pipeline-testing/stage \
+      --region us-east1 \
+      --job_name ml-stream-analysis \
+      --input_subscription projects/trusty-field-283517/subscriptions/german_credit_data-sub \
+      --input_topic projects/trusty-field-283517/topics/german_credit_data \
+      --save_main_session True \
+      --setup_file ./setup.py \
+      --streaming 
      
     10. Open one more tab in cloud SDK and run below command 
     cd ML-Streaming-pipeline-using-Dataflow
