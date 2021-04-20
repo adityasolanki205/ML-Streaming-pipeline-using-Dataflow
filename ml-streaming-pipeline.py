@@ -100,22 +100,41 @@ class Predict_Data(beam.DoFn):
 def run(argv=None, save_main_session=True):
     parser = argparse.ArgumentParser()
     parser.add_argument(
-      '--project',
-      dest='project',
-      help='Project used for this Pipeline')
+        '--project',
+        dest='project',
+        help='Project used for this Pipeline')
     parser.add_argument(
-        '--bucket_name', required=True, help='The name of the bucket')
+        '--bucket_name', 
+        required=True, 
+        help='The name of the bucket')
     parser.add_argument(
-        '--model_path', required=True, help='The path to the model that should be loaded')
+        '--model_path', 
+        required=True, 
+        help='The path to the model that should be loaded')
     parser.add_argument(
-        '--destination_name', required=True, help='The destination name of the files')
+        '--destination_name', 
+        required=True, 
+        help='The destination name of the files')
+    parser.add_argument(
+        '--input_subscription',
+        help=('Input PubSub subscription of the form '
+              '"projects/<PROJECT>/subscriptions/<SUBSCRIPTION>."'))
+    parser.add_argument(
+        '--input_topic',
+        help=('Input PubSub topic of the form '
+              '"projects/<PROJECT>/topics/<TOPIC>".'))
     known_args, pipeline_args = parser.parse_known_args(argv)
     options = PipelineOptions(pipeline_args)
     PROJECT_ID = known_args.project
-    TOPIC ="projects/trusty-field-283517/topics/german_credit_data"
+    TOPIC = known_args.input_topic
+    SUBSCRIPTION = known_args.input_subscription
     with beam.Pipeline(options=PipelineOptions()) as p:
         Encoded_data   = (p 
                        | 'Read data' >> beam.io.ReadFromPubSub(topic=TOPIC).with_output_types(bytes) )
+        '''
+        Encoded_data   = (p 
+                       | 'Read data' >> beam.io.ReadFromPubSub(subscription=SUBSCRIPTION).with_output_types(bytes) )
+        '''
         Data           = ( Encoded_data
                        | 'Decode' >> beam.Map(lambda x: x.decode('utf-8') ) )
         Parsed_data    = (Data 
