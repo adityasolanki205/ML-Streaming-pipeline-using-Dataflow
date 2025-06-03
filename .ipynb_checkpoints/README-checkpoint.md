@@ -139,26 +139,26 @@ Below are the steps to setup the enviroment and run the codes:
             Telephone,
             Foreign_worker= element.split(' ')
         return [{
-            'Existing_account': str(Existing_account),
-            'Duration_month': str(Duration_month),
-            'Credit_history': str(Credit_history),
-            'Purpose': str(Purpose),
-            'Credit_amount': str(Credit_amount),
-            'Saving': str(Saving),
-            'Employment_duration':str(Employment_duration),
-            'Installment_rate': str(Installment_rate),
-            'Personal_status': str(Personal_status),
-            'Debtors': str(Debtors),
-            'Residential_Duration': str(Residential_Duration),
-            'Property': str(Property),
-            'Age': str(Age),
-            'Installment_plans':str(Installment_plans),
-            'Housing': str(Housing),
-            'Number_of_credits': str(Number_of_credits),
-            'Job': str(Job),
-            'Liable_People': str(Liable_People),
-            'Telephone': str(Telephone),
-            'Foreign_worker': str(Foreign_worker)
+            'Existing_account': int(Existing_account),
+            'Duration_month': float(Duration_month),
+            'Credit_history': int(Credit_history),
+            'Purpose': int(Purpose),
+            'Credit_amount': float(Credit_amount),
+            'Saving': int(Saving),
+            'Employment_duration':int(Employment_duration),
+            'Installment_rate': float(Installment_rate),
+            'Personal_status': int(Personal_status),
+            'Debtors': int(Debtors),
+            'Residential_Duration': float(Residential_Duration),
+            'Property': int(Property),
+            'Age': float(Age),
+            'Installment_plans':int(Installment_plans),
+            'Housing': int(Housing),
+            'Number_of_credits': float(Number_of_credits),
+            'Job': int(Job),
+            'Liable_People': float(Liable_People),
+            'Telephone': int(Telephone),
+            'Foreign_worker': int(Foreign_worker),
         }]
     def run(argv=None, save_main_session=True):
         ...
@@ -235,35 +235,22 @@ Below are the steps to setup the enviroment and run the codes:
 
 ```python
     ... 
-    def download_blob(bucket_name=None, source_blob_name=None, project=None, destination_file_name=None):
-        storage_client = storage.Client(project)
-        bucket = storage_client.get_bucket(bucket_name)
-        blob = bucket.blob(source_blob_name)
-        blob.download_to_filename(destination_file_name)
-
-    class Predict_Data(beam.DoFn):
-        def __init__(self,project=None, bucket_name=None, model_path=None, destination_name=None):
-            self._model = None
-            self._project = project
-            self._bucket_name = bucket_name
-            self._model_path = model_path
-            self._destination_name = destination_name
-
-        def setup(self):
-            """Download sklearn model from GCS"""
-            download_blob(bucket_name=self._bucket_name, 
-                          source_blob_name=self._model_path,
-                          project=self._project, 
-                          destination_file_name=self._destination_name)
-            self._model = joblib.load(self._destination_name)
-
-        def process(self, element):
-            """Predicting using developed model"""
-            input_dat = {k: element[k] for k in element.keys()}
-            tmp = np.array(list(i for i in input_dat.values()))
-            tmp = tmp.reshape(1, -1)
-            element['Prediction'] = self._model.predict(tmp).item()
-            return [element]
+    def call_vertex_ai(data):
+    aiplatform.init(project='827249641444', location='asia-south1')
+    feature_order = ['Existing_account', 'Duration_month', 'Credit_history', 'Purpose',
+                 'Credit_amount', 'Saving', 'Employment_duration', 'Installment_rate',
+                 'Personal_status', 'Debtors', 'Residential_Duration', 'Property', 'Age',
+                 'Installment_plans', 'Housing', 'Number_of_credits', 'Job', 
+                 'Liable_People', 'Telephone', 'Foreign_worker']
+    endpoint = aiplatform.Endpoint(endpoint_name=f"projects/827249641444/locations/asia-south1/endpoints/6457541741091225600")
+    features = [data[feature] for feature in feature_order]
+    response = endpoint.predict(
+        instances=[features]
+    )
+    
+    prediction = response.predictions[0]
+    data['Prediction'] = int(prediction)
+    return data
     ...
     def run(argv=None, save_main_session=True):
         ...
@@ -277,10 +264,7 @@ Below are the steps to setup the enviroment and run the codes:
             Converted_data = ( Parsed_data
                              | 'Convert Datatypes' >> beam.Map(Convert_Datatype))
             Prediction     = ( Converted_data 
-                             | 'Predition' >> beam.ParDo(Predict_Data(project=PROJECT_ID, 
-                                                         bucket_name='gs://streaming-pipeline-testing', 
-                                                         model_path='Selected_Model.pkl',
-                                                         destination_name='Selected_model.pkl')))
+                             | 'Predition' >> 'Get Inference' >> beam.Map(call_vertex_ai))
             Output         = ( Prediction
                              | 'Saving the output' >> beam.io.WriteToText(known_args.output))
     if __name__ == '__main__':
@@ -339,11 +323,8 @@ Below are the steps to setup the enviroment and run the codes:
             Converted_data = ( Parsed_data
                              | 'Convert Datatypes' >> beam.Map(Convert_Datatype))
 
-            Prediction     = ( Converted_data 
-                             | 'Predition' >> beam.ParDo(Predict_Data(project=PROJECT_ID, 
-                                                         bucket_name='gs://streaming-pipeline-testing', 
-                                                         model_path='Selected_Model.pkl',
-                                                         destination_name='Selected_Model.pkl')))
+             Prediction     = ( Converted_data 
+                             | 'Predition' >> 'Get Inference' >> beam.Map(call_vertex_ai))
             output         = ( Prediction      
                              | 'Writing to bigquery' >> beam.io.WriteToBigQuery(
                                '{0}:GermanCredit.GermanCreditTable'.format(PROJECT_ID),
@@ -381,21 +362,21 @@ To test the code we need to do the following:
     sudo pip3 install sklearn
     
     9. Run the command and see the magic happen:
-     python3 ml-streaming-pipeline.py \
-      --runner DataFlowRunner \
-      --project trusty-field-283517 \
-      --bucket_name streaming-pipeline-testing \
-      --model_path Selected_Model.pkl \
-      --destination_name Selected_Model.pkl \
-      --temp_location gs://streaming-pipeline-testing/temp \
-      --staging_location gs://streaming-pipeline-testing/stage \
-      --region us-east1 \
-      --job_name ml-stream-analysis \
-      --input_subscription projects/trusty-field-283517/subscriptions/german_credit_data-sub \
-      --input_topic projects/trusty-field-283517/topics/german_credit_data \
-      --save_main_session True \
-      --setup_file ./setup.py \
-      --streaming 
+     python3 ml-streaming-pipeline.py   
+         --runner DataFlowRunner   
+         --project solar-dialect-264808   
+         --bucket_name test_german_data   
+         --temp_location gs://test_german_data/Batch/Temp   
+         --staging_location gs://test_german_data/Batch/Stage   
+         --region asia-south1   
+         --job_name ml-stream-analysis   
+         --input_subscription projects/solar-dialect-264808/subscriptions/german_credit_data-sub   
+         --input_topic projects/solar-dialect-264808/topics/german_credit_data   
+         --save_main_session True   
+         --setup_file ./setup.py   
+         --minNumWorkers 1   
+         --maxNumWorkers 4   
+         --streaming
      
     10. Open one more tab in cloud SDK and run below command 
     cd ML-Streaming-pipeline-using-Dataflow
