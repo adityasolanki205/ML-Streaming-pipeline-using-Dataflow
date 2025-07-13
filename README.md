@@ -31,6 +31,46 @@ For the last two years, I have been part of a great learning curve wherein I hav
     git clone https://github.com/adityasolanki205/ML-Streaming-pipeline-using-Dataflow.git
 ```
 
+## Initial Setup
+
+1. **Upload ML Model to GCS**: The model created in the repository [German Credit](https://github.com/adityasolanki205/German-Credit) has to be uploaded to the Storage Bucket.
+
+2. **Deploy the Model to Vertex AI Model Registry**: Now we will deploy the vertex AI model to model regsitry using the code below. Remember to update the Serving Container image.
+
+```python
+    from google.cloud.resourcemanager_v3 import FoldersAsyncClient
+    from google.cloud import aiplatform
+    from google.cloud.aiplatform.explain import ExplanationSpec
+    display_name = "german_credit-model-sdk"
+    artifact_uri = "gs://test_german_data/model-artifact"
+    serving_container_image_uri = "asia-docker.pkg.dev/vertex-ai/prediction/sklearn-cpu.1-5:latest"
+    
+    model = aiplatform.Model.upload(
+            display_name=display_name,
+            artifact_uri=artifact_uri,
+            location='asia-south1',
+            serving_container_image_uri=serving_container_image_uri,
+            sync=False
+        )
+```
+
+3. **Creating Endpoint for Predictions**: At last we will create the endpoint for us to infer the data.
+```python
+    deployed_model_display_name = "german-credit-model-endpoint"
+    traffic_split = {"0": 100}
+    machine_type = "n1-standard-4"
+    min_replica_count = 1
+    max_replica_count = 1
+    
+    endpoint = model.deploy(
+            deployed_model_display_name=deployed_model_display_name,
+            machine_type=machine_type,
+            traffic_split = traffic_split,
+            min_replica_count=min_replica_count,
+            max_replica_count=max_replica_count
+        )
+```
+ 
 ## Pipeline Construction
 
 Below are the steps to setup the enviroment and run the codes:
@@ -224,32 +264,25 @@ Below are the steps to setup the enviroment and run the codes:
         run()
 ```
 
-7. **Predicting Customer segments**: Now we will implement the machine learning model. If you wish to learn how this machine learning model was created, please visit this [repository](https://github.com/adityasolanki205/German-Credit). We will save this model using JobLib library. To load the sklearn model we will have to follow the steps mentioned below:
-    - Download the Model from Google Storage bucket using download_blob method
-    
-    - Load the model using setup() method in Predict_data() class
-    
-    - Predict Customer segments from the input data using Predict() method of sklearn
-    
-    - Add Prediction column in the output
+7. **Predicting Customer segments**: Now we will implement the machine learning model. If you wish to learn how this machine learning model was created, please visit this [repository](https://github.com/adityasolanki205/German-Credit). We will predict customer segment using endpoint created in previously. 
 
 ```python
     ... 
     def call_vertex_ai(data):
-    aiplatform.init(project='827249641444', location='asia-south1')
-    feature_order = ['Existing_account', 'Duration_month', 'Credit_history', 'Purpose',
-                 'Credit_amount', 'Saving', 'Employment_duration', 'Installment_rate',
-                 'Personal_status', 'Debtors', 'Residential_Duration', 'Property', 'Age',
-                 'Installment_plans', 'Housing', 'Number_of_credits', 'Job', 
-                 'Liable_People', 'Telephone', 'Foreign_worker']
-    endpoint = aiplatform.Endpoint(endpoint_name=f"projects/827249641444/locations/asia-south1/endpoints/6457541741091225600")
-    features = [data[feature] for feature in feature_order]
-    response = endpoint.predict(
-        instances=[features]
-    )
-    
-    prediction = response.predictions[0]
-    data['Prediction'] = int(prediction)
+        aiplatform.init(project='827249641444', location='asia-south1')
+        feature_order = ['Existing_account', 'Duration_month', 'Credit_history', 'Purpose',
+                     'Credit_amount', 'Saving', 'Employment_duration', 'Installment_rate',
+                     'Personal_status', 'Debtors', 'Residential_Duration', 'Property', 'Age',
+                     'Installment_plans', 'Housing', 'Number_of_credits', 'Job', 
+                     'Liable_People', 'Telephone', 'Foreign_worker']
+        endpoint = aiplatform.Endpoint(endpoint_name=f"projects/827249641444/locations/asia-south1/endpoints/6457541741091225600")
+        features = [data[feature] for feature in feature_order]
+        response = endpoint.predict(
+            instances=[features]
+        )
+        
+        prediction = response.predictions[0]
+        data['Prediction'] = int(prediction)
     return data
     ...
     def run(argv=None, save_main_session=True):
