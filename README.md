@@ -408,7 +408,7 @@ To test the code we need to do the following:
          --save_main_session True   
          --setup_file ./setup.py   
          --minNumWorkers 1   
-         --maxNumWorkers 4   
+         --max_num_workers 1    
          --streaming
      
     10. Open one more tab in cloud SDK and run below command 
